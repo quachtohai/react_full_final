@@ -59,7 +59,9 @@ export default function UpdateItem({
 
   const onSubmit = (fieldsValue) => {
     console.log(itemsData);
-
+    console.log(form);
+    console.log(form.getFieldValue(firstName))
+    
     let finalData = {};
     finalData[entity] = fieldsValue;
     finalData[entity].id = id;

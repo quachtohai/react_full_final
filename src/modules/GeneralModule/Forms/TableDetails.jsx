@@ -21,6 +21,7 @@ import FormItem from "antd/es/form/FormItem";
 import store from "@/redux/store";
 import calculate from "@/utils/calculate";
 import { request } from "@/request";
+import { UnderlineOutlined } from "@ant-design/icons";
 
 const EditableCell = ({
   editing,
@@ -35,6 +36,9 @@ const EditableCell = ({
   cancel,
   edit,
   deleteRecord,
+  dynamicState,
+  setDynamicState,
+  form,
   ...restProps
 }) => {
   const money = useMoney();
@@ -54,9 +58,7 @@ const EditableCell = ({
     const currentTotal = calculate.multiply(price, quantity);
     setTotal(currentTotal);
   };
-  const changeSelect = (value) => {
-    console.log(value);
-  };
+
   let options = [];
   if (formData && formData.description == "select") {
     if (formData.description == "select") {
@@ -82,10 +84,21 @@ const EditableCell = ({
       });
     }
   }
-  const changeInput = (event)=>{
-    console.log(event.target.value);
-    console.log(event.target.id);
-  }
+  const changeInput = (event,value) => {
+    console.log(value);
+    console.log(event.target);
+    let newState = {
+      ...dynamicState,
+      [event.target.id]: "11111"
+    };
+    setDynamicState({
+      ...newState      
+    });
+    form.setFieldsValue({
+     accountName:"5555555555555555"
+    })
+  };
+  console.log(dynamicState);
 
   const actions = (
     <span>
@@ -116,7 +129,19 @@ const EditableCell = ({
     <td {...restProps}>
       {editing ? (
         <>
+        
           <Form.Item name={dataIndex} rules={rules}>
+            {formData &&
+            formData.description == "string" &&
+            !formData.entitySearch ? (
+              <Input
+                placeholder={formData.description3}
+                onChange={changeInput}
+                id ={formData.fieldName}
+                //value={dynamicState[formData.fieldName]||children[1]}                
+              />
+            ) : undefined}
+
             {formData && formData.entitySearch ? (
               <AutoCompleteAsync
                 entity={formData.entitySearch}
@@ -126,24 +151,22 @@ const EditableCell = ({
                 withRedirect
                 urlToRedirect={formData.urlToRedirect}
               />
-            ) : formData && formData.description == "number" ? (
+            ) : undefined}
+            {formData && formData.description == "number" ? (
               <InputNumber
                 style={{ width: "100%" }}
                 min={0}
                 onChange={updateQt}
               />
-            ) : formData && formData.description == "date" ? (
+            ) : undefined}
+            {formData && formData.description == "date" ? (
               <DatePicker style={{ width: "100%" }} format={dateFormat} />
             ) : formData && formData.description == "select" ? (
               <Select options={options} onChange={changeSelect}></Select>
-            ) : formData &&
-              formData.description == "string" &&
-              !formData.entitySearch ? (
-              <Input placeholder={formData.description3} onChange={changeInput} value = {100000}/>
-            ) : formData &&
-              formData.description == "money" &&
-              formData &&
-              formData.fieldName.includes("price") ? (
+            ) : undefined}
+            {formData &&
+            formData.description == "money" &&
+            formData.fieldName.includes("price") ? (
               <InputNumber
                 className="moneyInput"
                 controls={false}
@@ -159,10 +182,11 @@ const EditableCell = ({
                 }
                 onChange={updatePrice}
               />
-            ) : formData &&
-              formData.description == "money" &&
-              formData &&
-              formData.fieldName.includes("total") ? (
+            ) : undefined}
+            {formData &&
+            formData.description == "money" &&
+            formData &&
+            formData.fieldName.includes("total") ? (
               <InputNumber
                 readOnly
                 className="moneyInput"
@@ -186,9 +210,8 @@ const EditableCell = ({
                   })
                 }
               />
-            ) : (
-              actions
-            )}
+            ) : undefined}           
+            {!formData || !formData.fieldName ? actions : undefined}
           </Form.Item>
         </>
       ) : typeof children[1] == "object" ? (
@@ -344,7 +367,6 @@ const TableDetails = ({
   entityDetail,
   currentData,
 }) => {
-  const [count, setCount] = useState(1);
   let formDatas = FormData(entityDetail);
   let initialItemsData = [];
   if (currentData && currentData.length > 0) {
@@ -352,6 +374,7 @@ const TableDetails = ({
       initialItemsData.push({ ...currentData, key: currentData.id, count: 1 })
     );
   }
+  const [dynamicState, setDynamicState] = useState({});
   const [data, setData] = useState(
     currentData && currentData.length > 0
       ? initialItemsData
@@ -450,6 +473,7 @@ const TableDetails = ({
     if (Object.keys(data[0]).length == 2) {
       edit(data[0]);
     }
+    //setData(dynamicState);
 
     handleChangeData(data);
   }, [data]);
@@ -497,6 +521,9 @@ const TableDetails = ({
         cancel: cancel,
         edit: edit,
         deleteRecord: deleteRecord,
+        dynamicState: dynamicState,
+        setDynamicState: setDynamicState,
+        form:form
       }),
     };
   });
