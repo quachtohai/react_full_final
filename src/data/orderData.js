@@ -1,0 +1,95 @@
+export const orderData = [
+  {
+    key: 1,
+    name: "TOYOTA",
+    email: "TOYOTA@gmail.com",
+    date: "2024-07-09 10:00:00",
+    status: "APPROVED",
+    access: "admin",
+    children: [
+      {
+        
+        key:101,
+        masterId:1,
+        itemId: 10,
+        itemName: "TOYOTA01",
+        quantity: 5,
+        approvedQuantity: 5,
+      },
+      {
+        masterId:1,
+        key:111,
+        itemId: 11,
+        itemName: "TOYOTA02",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+      {
+        masterId:1,
+        key:121,
+        itemId: 12,
+        itemName: "TOYOTA03",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+    ]
+},
+{
+  key: 2,
+    name: "HONDA",
+    email: "HONDA@gmail.com",
+    date: "2024-07-10 10:00:00",
+    status: "APPROVED",
+    access: "admin",
+    children: [
+      {
+        masterId:2,
+        key: 102,
+        itemId: 10,
+        itemName: "TOYOTA01",
+        quantity: 2,
+        approvedQuantity: 2,
+      },
+      {
+        masterId:2,
+        key: 112,
+        itemId: 11,
+        itemName: "TOYOTA02",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+      {
+        masterId:2,
+        key: 122,
+        itemId: 12,
+        itemName: "TOYOTA03",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+      {
+        masterId:2,
+        key:132,
+        itemId: 20,
+        itemName: "HONDA01",
+        quantity: 4,
+        approvedQuantity: 5,
+      },
+      {
+        masterId:2,
+        key:133,
+        itemId: 21,
+        itemName: "HONDA02",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+      {
+        masterId:2,
+        key:134,
+        itemId: 22,
+        itemName: "HONDA03",
+        quantity: 3,
+        approvedQuantity: 3,
+      },
+    ],
+}
+];
