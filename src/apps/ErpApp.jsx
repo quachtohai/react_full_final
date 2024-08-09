@@ -29,14 +29,14 @@ export default function ErpApp() {
 
   const { isMobile } = useResponsive();
   const dispatch = useDispatch();
-  
+
   useLayoutEffect(() => {
-   
+
     dispatch(settingsAction.list({ entity: 'setting' }));
   }, []);
-
+  
   const appSettings = useSelector(selectAppSettings);
-
+ 
   const { isSuccess: settingIsloaded } = useSelector(selectSettings);
 
   useEffect(() => {
@@ -50,8 +50,7 @@ export default function ErpApp() {
 
   if (settingIsloaded)
     return (
-      <Layout hasSider style={{ flexDirection: langDirection === 'rtl' ? 'row-reverse' : 'row' }}>
-        {/* {currentApp === 'default' ? <Navigation /> : <ExpensesNav />} */}
+      <Layout hasSider style={{ flexDirection: langDirection === 'rtl' ? 'row-reverse' : 'row' }}>       
         <Navigation />
 
         {isMobile ? (
@@ -78,7 +77,7 @@ export default function ErpApp() {
                 overflow: 'initial',
                 width: '100%',
                 padding: '0 50px',
-                //maxWidth: 1400,
+                //maxWidth: 1600,
               }}
             >
               <AppRouter />

@@ -1,9 +1,8 @@
 import useLanguage from "@/locale/useLanguage";
 import CreateGeneralModule from "@/modules/GeneralModule/CreateGeneralModule";
 import Module from "@/components/Module";
-export default function GeneralPageCreate({ entity }) {
-  const modules = Module({ entityDetail: entity });
-
+export default function GeneralPageCreate({ entity, dataSummary }) {
+  const modules = Module({ entityDetail: entity }); 
   const translate = useLanguage();
   const Labels = modules.labels;
 
@@ -11,5 +10,5 @@ export default function GeneralPageCreate({ entity }) {
     entity,
     ...Labels,
   };
-  return <CreateGeneralModule config={configPage} />;
+  return <CreateGeneralModule config={configPage} dataSummary = {dataSummary} />;
 }

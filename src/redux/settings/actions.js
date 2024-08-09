@@ -1,5 +1,6 @@
 import * as actionTypes from './types';
 import { request } from '@/request';
+import { settingData } from '../../data/settingData';
 
 const dispatchSettingsData = (datas) => {
   
@@ -46,8 +47,8 @@ export const settingsAction = {
           type: actionTypes.REQUEST_LOADING,
         });
 
-        let data = await request.listAll({ entity });
-
+        //let data = await request.listAll({ entity });
+        let data = settingData;
         if (data.success === true) {
           const payload = dispatchSettingsData(data.result);
           window.localStorage.setItem(
@@ -85,8 +86,8 @@ export const settingsAction = {
         dispatch({
           type: actionTypes.REQUEST_LOADING,
         });
-
-        let data = await request.listAll({ entity });
+        let data = settingData;
+        //let data = await request.listAll({ entity });
 
         if (data.success === true) {
           const payload = dispatchSettingsData(data.result);
@@ -118,8 +119,8 @@ export const settingsAction = {
         type: actionTypes.REQUEST_LOADING,
       });
 
-      let data = await request.listAll({ entity });
-
+      //let data = await request.listAll({ entity });
+      let data = settingData;
       if (data.success === true) {
         const payload = dispatchSettingsData(data.result);
         window.localStorage.setItem('settings', JSON.stringify(dispatchSettingsData(data.result)));
@@ -152,8 +153,8 @@ export const settingsAction = {
           type: actionTypes.REQUEST_LOADING,
         });
 
-        let data = await request.listAll({ entity });
-
+        //let data = await request.listAll({ entity });
+        let data = settingData;
         if (data.success === true) {
           const payload = dispatchSettingsData(data.result);
           window.localStorage.setItem(

@@ -40,21 +40,41 @@ function AddNewItem({ config }) {
   );
 }
 
-export default function DataTableMultipleTab({ config, extra = [], master, dataTableDetails }) {
+export default function DataTableMultipleTab({ config, extra = [], master, dataTableDetails, dataSummary, handleChangeDataSummary }) {
   const translate = useLanguage();
   let { entity, dataTableColumns, disableAdd = false, searchConfig } = config;
 
   const [checkStrictly, setCheckStrictly] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [dataSourceDetails, setDataSourceDetails] = useState([]);
- 
+
   const onSelectChange = (newSelectedRowKeys, newSelectedRows) => {
+    dataSummary = [{
+      userInfoCode: "USER001",
+      firstName: "QUACHTOHAIFIRSTNAME",
+      lastName: "QUACHTOHAILASTNAME",
+      accountCode: "USERINFOCODE001",
+      accountName: "USERINFONAME001",
+      password: "123456",
+      facultyDetaiL: "SALE"
+    },
+    {
+      userInfoCode: "USER002",
+      firstName: "QUACHTOHAIFIRSTNAME",
+      lastName: "QUACHTOHAILASTNAME",
+      accountCode: "USERINFOCODE002",
+      accountName: "USERINFONAME002",
+      password: "456789",
+      facultyDetaiL: "ACCOUNT"
+    }
+    ]
+    handleChangeDataSummary(dataSummary);
     setSelectedRowKeys(newSelectedRowKeys);
     let rowTmps = newSelectedRows.filter((x) => x.children == undefined);
-    let dataSourceTmpClone = dataSource.map(data => Object.assign({}, data));  
+    let dataSourceTmpClone = dataSource.map(data => Object.assign({}, data));
     let dataSourceTmp = [];
-    let dataSourceTmp2= [];
-    for (var i =0; i <dataSource.length; i++){
+    let dataSourceTmp2 = [];
+    for (var i = 0; i < dataSource.length; i++) {
       dataSourceTmp[i] = dataSourceTmpClone[i]
       dataSourceTmp[i].masterId = dataSourceTmp[i].key
       delete dataSourceTmp[i].children
@@ -62,7 +82,7 @@ export default function DataTableMultipleTab({ config, extra = [], master, dataT
       dataSourceTmp2.push(dataSourceTmp[i])
       console.log(dataSourceTmp2);
     }
-       
+
     rowTmps = rowTmps.map((rowTmp) => ({
       ...rowTmp,
       ...dataSourceTmp2.filter((x) => x.masterId == rowTmp.masterId)[0],
@@ -135,14 +155,14 @@ export default function DataTableMultipleTab({ config, extra = [], master, dataT
       ),
     },
   ];
-  
+
 
   const dispatch = useDispatch();
 
   const handelDataTableLoad = (pagination) => {
     const options = {
-      page: pagination.current || 1,
-      items: pagination.pageSize || 10,
+      pageIndex: pagination.current || 1,
+      pageSize: pagination.pageSize || 10,
     };
 
     dispatch(erpMultipleTab.listWithDetails({ entity, options }));
@@ -176,7 +196,7 @@ export default function DataTableMultipleTab({ config, extra = [], master, dataT
       {
         onSelect: (changeableRowKeys, changeableRows) => {
           setSelectedRowKeys(newSelectedRowKeys);
-          
+
         },
       },
     ],
@@ -197,14 +217,14 @@ export default function DataTableMultipleTab({ config, extra = [], master, dataT
                 <ArrowLeftOutlined />
               )
             }
-            extra={[              
+            extra={[
               <AutoCompleteAsync
                 key={`${uniqueId()}`}
                 entity={searchConfig?.entity}
                 displayLabels={["name"]}
                 searchFields={"name"}
                 onChange={filterTable}
-                />,
+              />,
               <Button
                 onClick={handelDataTableLoad}
                 key={`${uniqueId()}`}
@@ -241,7 +261,7 @@ export default function DataTableMultipleTab({ config, extra = [], master, dataT
             dataSource={dataSource}
             pagination={pagination}
             loading={listIsLoading}
-            //onChange={handelDataTableLoad}
+            onChange={handelDataTableLoad}
             scroll={{ x: true }}
           />
         </>

@@ -24,17 +24,24 @@ export default function CreateForm({ config, formElements, withUpload = false })
     if (fieldsValue.file && withUpload) {
       fieldsValue.file = fieldsValue.file[0].originFileObj;
     }
+    let dataToUpdate = { ...fieldsValue };
+    const options = { timeZone: 'Asia/Ho_Chi_Minh' };
 
-    // const trimmedValues = Object.keys(fieldsValue).reduce((acc, key) => {
-    //   acc[key] = typeof fieldsValue[key] === 'string' ? fieldsValue[key].trim() : fieldsValue[key];
-    //   return acc;
-    // }, {});
+    if (fieldsValue.birthDate || fieldsValue.date) {
+      dataToUpdate.birthDate = dayjs(fieldsValue.birthDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+      dataToUpdate.date = dayjs(fieldsValue.date).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+      
+    }
 
-    dispatch(crud.create({ entity, jsonData: fieldsValue, withUpload }));
+    let finalData = {};
+    finalData[entity] = dataToUpdate;   
+
+    dispatch(crud.create({ entity, jsonData: finalData, withUpload }));
   };
 
   useEffect(() => {
     if (isSuccess) {
+      alert("success");
       readBox.open();
       collapsedBox.open();
       panel.open();

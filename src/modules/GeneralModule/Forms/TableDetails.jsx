@@ -48,7 +48,6 @@ const EditableCell = ({
 
   const updateQt = (value) => {
     setQuantity(value);
-    console.log(value);
 
     const currentTotal = calculate.multiply(price, quantity);
     setTotal(currentTotal);
@@ -65,7 +64,6 @@ const EditableCell = ({
       formData.description2.split(";").map((item) => {
         options.push({
           value: item.split(",")[0],
-          //value: "drap",
           label: item.split(",")[1],
         });
       });
@@ -76,7 +74,8 @@ const EditableCell = ({
   if (formData && formData.rule) {
     if (formData.rule[0].includes("require")) {
       rules.push({
-        required: true,
+        required: true
+
       });
     } else {
       rules.push({
@@ -84,7 +83,7 @@ const EditableCell = ({
       });
     }
   }
-  const changeInput = (event,value) => {
+  const changeInput = (event, value) => {
     console.log(value);
     console.log(event.target);
     let newState = {
@@ -92,13 +91,13 @@ const EditableCell = ({
       [event.target.id]: "11111"
     };
     setDynamicState({
-      ...newState      
+      ...newState
     });
-    form.setFieldsValue({
-     accountName:"5555555555555555"
-    })
+    // form.setFieldsValue({
+    //  accountName:""
+    // })
   };
-  console.log(dynamicState);
+  //console.log(dynamicState);
 
   const actions = (
     <span>
@@ -129,16 +128,26 @@ const EditableCell = ({
     <td {...restProps}>
       {editing ? (
         <>
-        
+
           <Form.Item name={dataIndex} rules={rules}>
             {formData &&
-            formData.description == "string" &&
-            !formData.entitySearch ? (
+              formData.description == "string" && formData.fieldName.toLowerCase() != "password"
+              && !formData.entitySearch ? (
               <Input
                 placeholder={formData.description3}
                 onChange={changeInput}
-                id ={formData.fieldName}
-                //value={dynamicState[formData.fieldName]||children[1]}                
+                id={formData.fieldName}
+
+              />
+            ) : undefined}
+            {formData &&
+              formData.description == "string" && formData.fieldName.toLowerCase() == "password"
+              && !formData.entitySearch ? (
+              <Input.Password
+                placeholder={formData.description3}
+                onChange={changeInput}
+                id={formData.fieldName}
+
               />
             ) : undefined}
 
@@ -147,9 +156,9 @@ const EditableCell = ({
                 entity={formData.entitySearch}
                 displayLabels={formData.displayLabels.split(",")}
                 searchFields={formData.searchFields}
-                redirectLabel={formData.redireactLabel}
+                redirectLabel={formData.redirectLabel}
                 withRedirect
-                urlToRedirect={formData.urlToRedirect}
+                urlToRedirect={formData.urlRedirect}
               />
             ) : undefined}
             {formData && formData.description == "number" ? (
@@ -161,12 +170,14 @@ const EditableCell = ({
             ) : undefined}
             {formData && formData.description == "date" ? (
               <DatePicker style={{ width: "100%" }} format={dateFormat} />
-            ) : formData && formData.description == "select" ? (
-              <Select options={options} onChange={changeSelect}></Select>
-            ) : undefined}
+
+            )
+              : formData && formData.description == "select" ? (
+                <Select options={options} onChange={changeSelect}></Select>
+              ) : undefined}
             {formData &&
-            formData.description == "money" &&
-            formData.fieldName.includes("price") ? (
+              formData.description == "money" &&
+              formData.fieldName.includes("price") ? (
               <InputNumber
                 className="moneyInput"
                 controls={false}
@@ -184,9 +195,9 @@ const EditableCell = ({
               />
             ) : undefined}
             {formData &&
-            formData.description == "money" &&
-            formData &&
-            formData.fieldName.includes("total") ? (
+              formData.description == "money" &&
+              formData &&
+              formData.fieldName.includes("total") ? (
               <InputNumber
                 readOnly
                 className="moneyInput"
@@ -210,7 +221,7 @@ const EditableCell = ({
                   })
                 }
               />
-            ) : undefined}           
+            ) : undefined}
             {!formData || !formData.fieldName ? actions : undefined}
           </Form.Item>
         </>
@@ -221,9 +232,9 @@ const EditableCell = ({
           entity={formData.entitySearch}
           displayLabels={formData.displayLabels.split(",")}
           searchFields={formData.searchFields}
-          redirectLabel={formData.redireactLabel}
+          redirectLabel={formData.redirectLabel}
           withRedirect
-          urlToRedirect={formData.urlToRedirect}
+          urlToRedirect={formData.urlRedirect}
         />
       ) : formData && formData.description == "number" ? (
         <InputNumber style={{ width: "100%" }} min={0} onChange={updateQt} />
@@ -233,57 +244,63 @@ const EditableCell = ({
         <Select options={options}></Select>
       ) : formData &&
         formData.description == "string" &&
-        !formData.entitySearch ? (
+        !formData.entitySearch && formData.fieldName.toLowerCase() != "password" ? (
         <Input placeholder={formData.description3} value={children[1]} />
-      ) : formData &&
-        formData.description == "money" &&
+      ) :
         formData &&
-        formData.fieldName.includes("price") ? (
-        <InputNumber
-          className="moneyInput"
-          controls={false}
-          addonAfter={
-            money.currency_position === "after"
-              ? money.currency_symbol
-              : undefined
-          }
-          addonBefore={
-            money.currency_position === "before"
-              ? money.currency_symbol
-              : undefined
-          }
-          onChange={updatePrice}
-        />
-      ) : formData &&
-        formData.description == "money" &&
-        formData &&
-        formData.fieldName.includes("total") ? (
-        <InputNumber
-          readOnly
-          className="moneyInput"
-          min={0}
-          controls={false}
-          value={totalState}
-          addonAfter={
-            money.currency_position === "after"
-              ? money.currency_symbol
-              : undefined
-          }
-          addonBefore={
-            money.currency_position === "before"
-              ? money.currency_symbol
-              : undefined
-          }
-          formatter={(value) =>
-            money.amountFormatter({
-              amount: value,
-              currency_code: money.currency_code,
-            })
-          }
-        />
-      ) : (
-        actions
-      )}
+          formData.description == "string" &&
+          !formData.entitySearch && formData.fieldName.toLowerCase() == "password" ? (
+          <Input.Password placeholder={formData.description3} value={children[1]} />
+        ) :
+          formData &&
+            formData.description == "money" &&
+            formData &&
+            formData.fieldName.includes("price") ? (
+            <InputNumber
+              className="moneyInput"
+              controls={false}
+              addonAfter={
+                money.currency_position === "after"
+                  ? money.currency_symbol
+                  : undefined
+              }
+              addonBefore={
+                money.currency_position === "before"
+                  ? money.currency_symbol
+                  : undefined
+              }
+              onChange={updatePrice}
+            />
+          ) : formData &&
+            formData.description == "money" &&
+            formData &&
+            formData.fieldName.includes("total") ? (
+            <InputNumber
+              readOnly
+              className="moneyInput"
+              min={0}
+              controls={false}
+              value={totalState}
+              addonAfter={
+                money.currency_position === "after"
+                  ? money.currency_symbol
+                  : undefined
+              }
+              addonBefore={
+                money.currency_position === "before"
+                  ? money.currency_symbol
+                  : undefined
+              }
+              formatter={(value) =>
+                money.amountFormatter({
+                  amount: value,
+                  currency_code: money.currency_code,
+                })
+              }
+            />
+          ) : (
+            actions
+          )}
     </td>
   );
 };
@@ -333,7 +350,7 @@ function FormData(entityDetail) {
 
         if (
           formDataObject.entityName.toLowerCase() ==
-            entityDetail.toLowerCase() &&
+          entityDetail.toLowerCase() &&
           formDataObject.type == "2"
         ) {
           finalResults.push(formDataObject);
@@ -366,8 +383,11 @@ const TableDetails = ({
   handleChangeData,
   entityDetail,
   currentData,
+  readOnly,
+  dataSummary
 }) => {
   let formDatas = FormData(entityDetail);
+  console.log(dataSummary);
   let initialItemsData = [];
   if (currentData && currentData.length > 0) {
     currentData.map((currentData) =>
@@ -377,8 +397,8 @@ const TableDetails = ({
   const [dynamicState, setDynamicState] = useState({});
   const [data, setData] = useState(
     currentData && currentData.length > 0
-      ? initialItemsData
-      : [formDatas.initialData]
+      ? initialItemsData : dataSummary && dataSummary.length > 0 ? dataSummary
+        : [formDatas.initialData]
   );
   formDatas.initialData.count = 1;
   formDatas.initialData.key = 1;
@@ -409,7 +429,7 @@ const TableDetails = ({
       key: formDatas.initialData.key,
       count: formDatas.initialData.count,
     };
-    console.log(formDatas.initialData);
+    //console.log(formDatas.initialData);
     setData([...data, dataUpdate]);
   };
   const handleGetData = () => {
@@ -498,7 +518,7 @@ const TableDetails = ({
           </span>
         ) : (
           <Typography.Link
-            disabled={editingKey !== ""}
+            disabled={editingKey !== "" || readOnly}
             onClick={() => edit(record)}
           >
             Edit
@@ -523,7 +543,7 @@ const TableDetails = ({
         deleteRecord: deleteRecord,
         dynamicState: dynamicState,
         setDynamicState: setDynamicState,
-        form:form
+        form: form
       }),
     };
   });
@@ -542,6 +562,7 @@ const TableDetails = ({
           style={{
             marginBottom: 16,
           }}
+          disabled={readOnly ? true : false}
         >
           Add a row
         </Button>
@@ -552,6 +573,7 @@ const TableDetails = ({
           style={{
             marginBottom: 16,
           }}
+          disabled={readOnly ? true : false}
         >
           Get Data
         </Button>

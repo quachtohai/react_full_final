@@ -12,7 +12,7 @@ export default function AutoCompleteAsync({
   entity,
   displayLabels,
   searchFields,
-  outputValue = '_id',
+  outputValue = 'id',
   redirectLabel = 'Add New',
   withRedirect = false,
   urlToRedirect = '/',
@@ -20,7 +20,7 @@ export default function AutoCompleteAsync({
   onChange, /// this is for update
 }) {
   const translate = useLanguage();
-
+  
   const addNewValue = { value: 'redirectURL', label: `+ ${translate(redirectLabel)}` };
 
   const [selectOptions, setOptions] = useState([]);
@@ -38,8 +38,7 @@ export default function AutoCompleteAsync({
 
   const handleSelectChange = (newValue) => {
     isUpdating.current = false;
-    // setCurrentValue(value[outputValue] || value); // set nested value or value
-    // onChange(newValue[outputValue] || newValue);
+    
     if (onChange) {
       if (newValue) onChange(newValue[outputValue] || newValue);
     }
@@ -77,6 +76,7 @@ export default function AutoCompleteAsync({
       q: debouncedValue,
       fields: searchFields,
     };
+    
     const callback = asyncSearch(options);
     onFetch(callback);
 
@@ -86,10 +86,9 @@ export default function AutoCompleteAsync({
   }, [debouncedValue]);
 
   const onSearch = (searchText) => {
+    
     isSearching.current = true;
-    setSearching(true);
-    // setOptions([]);
-    // setCurrentValue(undefined);
+    setSearching(true);  
     setValToSearch(searchText);
   };
 
@@ -104,6 +103,7 @@ export default function AutoCompleteAsync({
   }, [isSuccess, result]);
   useEffect(() => {
     // this for update Form , it's for setField
+    
     if (value && isUpdating.current) {
       setOptions([value]);
       setCurrentValue(value[outputValue] || value); // set nested value or value

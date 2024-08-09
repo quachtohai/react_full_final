@@ -1,128 +1,101 @@
-import { useState, useEffect } from 'react';
-import { Divider } from 'antd';
+import { useState, useEffect } from "react";
+import { Form, Divider } from "antd";
+import dayjs from "dayjs";
+import { Button, Tag } from "antd";
+import { PageHeader } from "@ant-design/pro-layout";
 
-import { Button, Row, Col, Descriptions, Statistic, Tag } from 'antd';
-import { PageHeader } from '@ant-design/pro-layout';
-import {
-  EditOutlined,
-  FilePdfOutlined,
-  CloseCircleOutlined,
-  RetweetOutlined,
-  MailOutlined,
-} from '@ant-design/icons';
+import { useSelector, useDispatch } from "react-redux";
+import useLanguage from "@/locale/useLanguage";
+import { erp } from "@/redux/erp/actions";
 
-import { useSelector, useDispatch } from 'react-redux';
-import useLanguage from '@/locale/useLanguage';
-import { erp } from '@/redux/erp/actions';
+import calculate from "@/utils/calculate";
+import { generate as uniqueId } from "shortid";
+import { selectUpdatedItem } from "@/redux/erp/selectors";
+import Loading from "@/components/Loading";
+import { tagColor } from "@/utils/statusTagColor";
 
-import { generate as uniqueId } from 'shortid';
+import { CloseCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import { useNavigate, useParams } from "react-router-dom";
 
-import { selectCurrentItem } from '@/redux/erp/selectors';
+import { selectReadItem } from "@/redux/erp/selectors";
+import { settingsAction } from "@/redux/settings/actions";
 
-import { DOWNLOAD_BASE_URL } from '@/config/serverApiConfig';
-import { useMoney, useDate } from '@/settings';
-import useMail from '@/hooks/useMail';
-import { useNavigate } from 'react-router-dom';
-import { tagColor } from '@/utils/statusTagColor';
 
-const Item = ({ item, currentErp }) => {
-  const { moneyFormatter } = useMoney();
-  return (
-    <Row gutter={[12, 0]} key={item._id}>
-      <Col className="gutter-row" span={11}>
-        <p style={{ marginBottom: 5 }}>
-          <strong>{item.itemName}</strong>
-        </p>
-        <p>{item.description}</p>
-      </Col>
-      <Col className="gutter-row" span={4}>
-        <p
-          style={{
-            textAlign: 'right',
-          }}
-        >
-          {moneyFormatter({ amount: item.price, currency_code: currentErp.currency })}
-        </p>
-      </Col>
-      <Col className="gutter-row" span={4}>
-        <p
-          style={{
-            textAlign: 'right',
-          }}
-        >
-          {item.quantity}
-        </p>
-      </Col>
-      <Col className="gutter-row" span={5}>
-        <p
-          style={{
-            textAlign: 'right',
-            fontWeight: '700',
-          }}
-        >
-          {moneyFormatter({ amount: item.total, currency_code: currentErp.currency })}
-        </p>
-      </Col>
-      <Divider dashed style={{ marginTop: 0, marginBottom: 15 }} />
-    </Row>
-  );
-};
 
-export default function ReadItem({ config, selectedItem }) {
+export default function ReadItem({
+  config,
+  ReadForm,
+  currentData,
+  detail,
+}) {
   const translate = useLanguage();
-  const { entity, ENTITY_NAME } = config;
+  let { entity } = config;
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { current, isLoading, isSuccess } = useSelector(selectUpdatedItem);
+  const [form] = Form.useForm();
+  const [subTotal, setSubTotal] = useState(0);
+  const [currentErp, setCurrentErp] = useState(current);
+  const { id } = useParams();
 
-  const { moneyFormatter } = useMoney();
-  const { send, isLoading: mailInProgress } = useMail({ entity });
-
-  const { result: currentResult } = useSelector(selectCurrentItem);
-
-  const resetErp = {
-    status: '',
-    client: {
-      name: '',
-      email: '',
-      phone: '',
-      address: '',
-    },
-    subTotal: 0,
-    taxTotal: 0,
-    taxRate: 0,
-    total: 0,
-    credit: 0,
-    number: 0,
-    year: 0,
+  const handleValuesChange = (changedValues, values) => {};
+  const [itemsData, setItemsData] = useState([]);
+  const handleChangeData = (items) => {
+    console.log(items);
+    setItemsData(items);
   };
 
-  const [itemslist, setItemsList] = useState([]);
-  const [currentErp, setCurrentErp] = useState(selectedItem ?? resetErp);
-  const [client, setClient] = useState({});
+  const onSubmit = (fieldsValue) => {
+    console.log(itemsData);   
+    
+    let finalData = {};
+    finalData[entity] = fieldsValue;
+    finalData[entity].id = id;
+    let entityDetail = entity + "details";
+    if (detail) entityDetail = detail +'s';
+    let itemDataFinal = [];
+    itemsData.map((itemData) => {
+      itemDataFinal.push({ ...itemData, userInfoId: id });
+    });
+    console.log(itemDataFinal);
+    finalData[entity][entityDetail] = itemDataFinal;
+    dispatch(erp.update({ entity: detail || entity, id, jsonData: finalData }));
+  };
 
   useEffect(() => {
-    if (currentResult) {
-      const { items, invoice, ...others } = currentResult;
+    if (isSuccess) {
+      form.resetFields();
+      setSubTotal(0);
+      dispatch(erp.resetAction({ actionType: "update" }));
+      navigate(`/${entity.toLowerCase()}/read/${id}`);
+    }
+  }, [isSuccess]);
 
-      if (items) {
-        setItemsList(items);
-        setCurrentErp(currentResult);
-      } else if (invoice.items) {
-        setItemsList(invoice.items);
-        setCurrentErp({ ...invoice.items, ...others, ...invoice });
+  useEffect(() => {
+    if (current) {
+      setCurrentErp(current);
+      let formData = { ...current };
+      if (formData.date) {
+        formData.date = dayjs(formData.date);
       }
-    }
-    return () => {
-      setItemsList([]);
-      setCurrentErp(resetErp);
-    };
-  }, [currentResult]);
+      if (formData.expiredDate) {
+        formData.expiredDate = dayjs(formData.expiredDate);
+      }
+      if (formData.birthDate) {
+        formData.birthDate = dayjs(formData.birthDate);
+      }
+      if (!formData.taxRate) {
+        formData.taxRate = 0;
+      }
 
-  useEffect(() => {
-    if (currentErp?.client) {
-      setClient(currentErp.client[currentErp.client.type]);
+      const { subTotal } = formData;
+
+      form.resetFields();
+      form.setFieldsValue(formData);
+      setSubTotal(subTotal);
     }
-  }, [currentErp]);
+  }, [current]);
 
   return (
     <>
@@ -130,15 +103,18 @@ export default function ReadItem({ config, selectedItem }) {
         onBack={() => {
           navigate(`/${entity.toLowerCase()}`);
         }}
-        title={`${ENTITY_NAME} # ${currentErp.number}/${currentErp.year || ''}`}
+        title={translate("Read")}
         ghost={false}
         tags={[
-          <Tag color={tagColor(currentErp.status)?.color} key="status">
-            {currentErp.status && translate(currentErp.status)}
+          <Tag color={tagColor(currentErp && currentErp.status)?.color} key="status">
+            {currentErp && currentErp.status && translate(currentErp.status)}
           </Tag>,
-          currentErp.paymentStatus && (
-            <Tag color={tagColor(currentErp.paymentStatus)?.color} key="paymentStatus">
-              {currentErp.paymentStatus && translate(currentErp.paymentStatus)}
+          currentErp && currentErp.paymentStatus && (
+            <Tag
+              color={tagColor(currentErp &&currentErp.paymentStatus)?.color}
+              key="paymentStatus"
+            >
+              {currentErp && currentErp.paymentStatus && translate(currentErp.paymentStatus)}
             </Tag>
           ),
         ]}
@@ -150,176 +126,35 @@ export default function ReadItem({ config, selectedItem }) {
             }}
             icon={<CloseCircleOutlined />}
           >
-            {translate('Close')}
+            {translate("Close")}
           </Button>,
-          <Button
-            key={`${uniqueId()}`}
-            onClick={() => {
-              window.open(
-                `${DOWNLOAD_BASE_URL}${entity}/${entity}-${currentErp._id}.pdf`,
-                '_blank'
-              );
-            }}
-            icon={<FilePdfOutlined />}
-          >
-            {translate('Download PDF')}
-          </Button>,
-          <Button
-            key={`${uniqueId()}`}
-            loading={mailInProgress}
-            onClick={() => {
-              send(currentErp._id);
-            }}
-            icon={<MailOutlined />}
-          >
-            {translate('Send by Email')}
-          </Button>,
-          <Button
-            key={`${uniqueId()}`}
-            onClick={() => {
-              dispatch(erp.convert({ entity, id: currentErp._id }));
-            }}
-            icon={<RetweetOutlined />}
-            style={{ display: entity === 'quote' ? 'inline-block' : 'none' }}
-          >
-            {translate('Convert to Invoice')}
-          </Button>,
-
-          <Button
-            key={`${uniqueId()}`}
-            onClick={() => {
-              dispatch(
-                erp.currentAction({
-                  actionType: 'update',
-                  data: currentErp,
-                })
-              );
-              navigate(`/${entity.toLowerCase()}/update/${currentErp._id}`);
-            }}
-            type="primary"
-            icon={<EditOutlined />}
-          >
-            {translate('Edit')}
-          </Button>,
+          <Button type="primary" icon={<PlusOutlined />}>Print</Button>,
+          <Button type="primary" icon={<PlusOutlined />}>View</Button>
         ]}
         style={{
-          padding: '20px 0px',
+          padding: "20px 0px",
         }}
-      >
-        <Row>
-          <Statistic title="Status" value={currentErp.status} />
-          <Statistic
-            title={translate('SubTotal')}
-            value={moneyFormatter({
-              amount: currentErp.subTotal,
-              currency_code: currentErp.currency,
-            })}
-            style={{
-              margin: '0 32px',
-            }}
-          />
-          <Statistic
-            title={translate('Total')}
-            value={moneyFormatter({ amount: currentErp.total, currency_code: currentErp.currency })}
-            style={{
-              margin: '0 32px',
-            }}
-          />
-          <Statistic
-            title={translate('Paid')}
-            value={moneyFormatter({
-              amount: currentErp.credit,
-              currency_code: currentErp.currency,
-            })}
-            style={{
-              margin: '0 32px',
-            }}
-          />
-        </Row>
-      </PageHeader>
+      ></PageHeader>
       <Divider dashed />
-      <Descriptions title={`Client : ${currentErp.client.name}`}>
-        <Descriptions.Item label={translate('Address')}>{client.address}</Descriptions.Item>
-        <Descriptions.Item label={translate('email')}>{client.email}</Descriptions.Item>
-        <Descriptions.Item label={translate('Phone')}>{client.phone}</Descriptions.Item>
-      </Descriptions>
-      <Divider />
-      <Row gutter={[12, 0]}>
-        <Col className="gutter-row" span={11}>
-          <p>
-            <strong>{translate('Product')}</strong>
-          </p>
-        </Col>
-        <Col className="gutter-row" span={4}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Price')}</strong>
-          </p>
-        </Col>
-        <Col className="gutter-row" span={4}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Quantity')}</strong>
-          </p>
-        </Col>
-        <Col className="gutter-row" span={5}>
-          <p
-            style={{
-              textAlign: 'right',
-            }}
-          >
-            <strong>{translate('Total')}</strong>
-          </p>
-        </Col>
-        <Divider />
-      </Row>
-      {itemslist.map((item) => (
-        <Item key={item._id} item={item} currentErp={currentErp}></Item>
-      ))}
-      <div
-        style={{
-          width: '300px',
-          float: 'right',
-          textAlign: 'right',
-          fontWeight: '700',
-        }}
-      >
-        <Row gutter={[12, -5]}>
-          <Col className="gutter-row" span={12}>
-            <p>{translate('Sub Total')} :</p>
-          </Col>
-
-          <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.subTotal, currency_code: currentErp.currency })}
-            </p>
-          </Col>
-          <Col className="gutter-row" span={12}>
-            <p>
-              {translate('Tax Total')} ({currentErp.taxRate} %) :
-            </p>
-          </Col>
-          <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.taxTotal, currency_code: currentErp.currency })}
-            </p>
-          </Col>
-          <Col className="gutter-row" span={12}>
-            <p>{translate('Total')} :</p>
-          </Col>
-          <Col className="gutter-row" span={12}>
-            <p>
-              {moneyFormatter({ amount: currentErp.total, currency_code: currentErp.currency })}
-            </p>
-          </Col>
-        </Row>
-      </div>
+      <Loading isLoading={isLoading}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={onSubmit}
+          onValuesChange={handleValuesChange}
+        >
+          <ReadForm
+            subTotal={subTotal}
+            current={current}
+            itemsData={currentData.userInfoDetails}
+            handleChangeData={handleChangeData}
+            entityDetail={entity}
+            currentData={currentData.userInfoDetails}
+            detail={detail}
+            readOnly ={true}
+          />
+        </Form>
+      </Loading>
     </>
   );
 }

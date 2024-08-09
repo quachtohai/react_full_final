@@ -1,5 +1,5 @@
 import Tabs from "@/components/Tabs";
-export default function OrderDataTableModule({ config, dataTableDetails }) {
+export default function GeneralMultipleTabDataTableModule({ config, dataTableDetails }) {
   const tabData = [
     { label: config?.entity.toUpperCase() },
     { label: "DETAILS" },

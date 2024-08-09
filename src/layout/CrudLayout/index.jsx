@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import DefaultLayout from "../DefaultLayout";
+import DefaultLayout from '../DefaultLayout';
 
-import SidePanel from "@/components/SidePanel";
-import { Layout } from "antd";
-import { useCrudContext } from "@/context/crud";
-import { useAppContext } from "@/context/appContext";
+import SidePanel from '@/components/SidePanel';
+import { Layout } from 'antd';
+import { useCrudContext } from '@/context/crud';
+import { useAppContext } from '@/context/appContext';
 
 const { Content } = Layout;
 
@@ -30,14 +30,15 @@ const ContentBox = ({ children }) => {
     return () => clearTimeout(timer);
   }, [isPanelClose]);
 
+
   return (
     <Content
       className="whiteBox shadow layoutPadding"
       style={{
-        margin: "30px auto",
-        width: "100%",
-        maxWidth: "100%",
-        flex: "none",
+        margin: '30px auto',
+        width: '100%',
+        maxWidth: '100%',
+        flex: 'none',
       }}
     >
       {children}
@@ -61,8 +62,8 @@ export default function CrudLayout({
           bottomContent={sidePanelBottomContent}
           fixHeaderPanel={fixHeaderPanel}
         ></SidePanel>
-        {children}
-        {/* <ContentBox> {children}</ContentBox>  */}
+
+        <ContentBox> {children}</ContentBox>
       </DefaultLayout>
     </>
   );

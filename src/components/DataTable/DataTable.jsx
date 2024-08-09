@@ -85,6 +85,7 @@ export default function DataTable({ config, extra = [] }) {
     collapsedBox.open();
   }
   function handleDelete(record) {
+   
     dispatch(crud.currentAction({ actionType: 'delete', data: record }));
     modal.open();
   }
@@ -133,7 +134,7 @@ export default function DataTable({ config, extra = [] }) {
                 default:
                   break;
               }
-              
+
             },
           }}
           trigger={['click']}
@@ -154,7 +155,7 @@ export default function DataTable({ config, extra = [] }) {
   const dispatch = useDispatch();
 
   const handelDataTableLoad = useCallback((pagination) => {
-    const options = { page: pagination.current || 1, items: pagination.pageSize || 10 };
+    const options = { pageIndex: pagination.current || 1, pageSize: pagination.pageSize || 10 };
     dispatch(crud.list({ entity, options }));
   }, []);
 
@@ -176,13 +177,13 @@ export default function DataTable({ config, extra = [] }) {
     };
   }, []);
 
-  const langDirection=useSelector(selectLangDirection)
+  const langDirection = useSelector(selectLangDirection)
 
   return (
     <>
       <PageHeader
         onBack={() => window.history.back()}
-        backIcon={langDirection==="rtl"?<ArrowRightOutlined/>:<ArrowLeftOutlined />}
+        backIcon={langDirection === "rtl" ? <ArrowRightOutlined /> : <ArrowLeftOutlined />}
         title={DATATABLE_TITLE}
         ghost={false}
         extra={[
@@ -200,13 +201,13 @@ export default function DataTable({ config, extra = [] }) {
         ]}
         style={{
           padding: '20px 0px',
-          direction:langDirection
+          direction: langDirection
         }}
       ></PageHeader>
 
       <Table
         columns={dataTableColumns}
-        rowKey={(item) => item._id}
+        rowKey={(item) => item.id}
         dataSource={dataSource}
         pagination={pagination}
         loading={listIsLoading}

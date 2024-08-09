@@ -50,7 +50,12 @@ export default function UpdateItem({
   const [currentErp, setCurrentErp] = useState(current);
   const { id } = useParams();
 
-  const handelValuesChange = (changedValues, values) => {};
+  const handleValuesChange = (changedValues, values) => {
+    console.log(changedValues,values);
+    form.setFieldsValue({
+      fullName: (values.firstName + " " || "") + (values.lastName || "")
+    })
+  };
   const [itemsData, setItemsData] = useState([]);
   const handleChangeData = (items) => {
     console.log(items);
@@ -58,12 +63,19 @@ export default function UpdateItem({
   };
 
   const onSubmit = (fieldsValue) => {
+    let dataToUpdate = { ...fieldsValue };
     console.log(itemsData);
     console.log(form);
-    console.log(form.getFieldValue(firstName))
+    console.log(form.getFieldValue(firstName));
+    const options = { timeZone: 'Asia/Ho_Chi_Minh' };
+
+    if (fieldsValue.birthDate) {
+      dataToUpdate.birthDate = dayjs(fieldsValue.birthDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+      
+    }
     
     let finalData = {};
-    finalData[entity] = fieldsValue;
+    finalData[entity] = dataToUpdate;
     finalData[entity].id = id;
     let entityDetail = entity + "details";
     if (detail) entityDetail = detail +'s';
@@ -87,10 +99,14 @@ export default function UpdateItem({
 
   useEffect(() => {
     if (current) {
+      
       setCurrentErp(current);
       let formData = { ...current };
       if (formData.date) {
         formData.date = dayjs(formData.date);
+      }
+      if (formData.birthDate) {
+        formData.birthDate = dayjs(formData.birthDate);
       }
       if (formData.expiredDate) {
         formData.expiredDate = dayjs(formData.expiredDate);
@@ -150,7 +166,7 @@ export default function UpdateItem({
           form={form}
           layout="vertical"
           onFinish={onSubmit}
-          onValuesChange={handelValuesChange}
+          onValuesChange={handleValuesChange}
         >
           <UpdateForm
             subTotal={subTotal}

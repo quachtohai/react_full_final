@@ -34,12 +34,10 @@ export default function GeneralForm({
   entityDetail,
   currentData,
   detail,
+  readOnly,
+  dataSummary
 }) {
-  const { last_invoice_number } = useSelector(selectFinanceSettings);
-
-  if (last_invoice_number === undefined) {
-    return <></>;
-  }
+  
 
   return (
     <LoadGeneralForm
@@ -50,6 +48,8 @@ export default function GeneralForm({
       entityDetail={entityDetail}
       currentData={currentData}
       detail={detail}
+      readOnly={readOnly}
+      dataSummary = {dataSummary}
     />
   );
 }
@@ -62,23 +62,24 @@ function LoadGeneralForm({
   entityDetail,
   currentData,
   detail,
+  readOnly,
+  dataSummary
 }) {
   const translate = useLanguage();
-  const { dateFormat } = useDate();
-  const { last_invoice_number } = useSelector(selectFinanceSettings);
+
   const [total, setTotal] = useState(undefined);
   const [taxRate, setTaxRate] = useState(0);
   const [taxTotal, setTaxTotal] = useState(0);
   const [currentYear, setCurrentYear] = useState(() =>
     new Date().getFullYear()
   );
-  const [number, setNumber] = useState(100); 
+  const [number, setNumber] = useState(100);
 
   useEffect(() => {
     if (current) {
       const { taxRate = 0, year, number } = current;
       setTaxRate(taxRate / 100);
-      setCurrentYear(year);      
+      setCurrentYear(year);
     }
   }, [current]);
   useEffect(() => {
@@ -90,10 +91,9 @@ function LoadGeneralForm({
     setTaxTotal(Number.parseFloat(calculate.multiply(subTotal, taxRate)));
     setTotal(Number.parseFloat(currentTotal));
   }, [subTotal, taxRate]);
-
   return (
     <>
-      <FormData entityDetail={entityDetail} />
+      <FormData entityDetail={entityDetail} readOnly={readOnly} />
       <Divider dashed />
       <TableDetails
         number={number}
@@ -101,6 +101,8 @@ function LoadGeneralForm({
         handleChangeData={handleChangeData}
         entityDetail={detail || entityDetail}
         currentData={currentData}
+        readOnly={readOnly}
+        dataSummary = {dataSummary}
       />
       <Divider dashed />
     </>

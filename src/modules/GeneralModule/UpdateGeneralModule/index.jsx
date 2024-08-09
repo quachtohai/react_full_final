@@ -19,18 +19,18 @@ export default function UpdateGeneralModule({ config, detail }) {
   const dispatch = useDispatch();
 
   const { id } = useParams();
-  
+
   useLayoutEffect(() => {
-    dispatch(erp.read({ entity: detail||config.entity, id }));
+    dispatch(erp.read({ entity: detail || config.entity, id }));
   }, [id]);
 
   const { result: currentResult, isSuccess, isLoading = true } = useSelector(selectReadItem);
   console.log(currentResult);
 
   useLayoutEffect(() => {
-    
+
     if (currentResult) {
-      const data = { ...currentResult };      
+      const data = { ...currentResult };
       dispatch(erp.currentAction({ actionType: 'update', data }));
     }
   }, [currentResult]);
@@ -45,7 +45,7 @@ export default function UpdateGeneralModule({ config, detail }) {
     return (
       <ErpLayout>
         {isSuccess ? (
-          <UpdateItem config={config} UpdateForm={GeneralForm} currentData = {currentResult} detail = {detail} />
+          <UpdateItem config={config} UpdateForm={GeneralForm} currentData={currentResult} detail={detail} />
         ) : (
           <NotFound entity={config.entity} />
         )}

@@ -4,16 +4,16 @@ import useLanguage from "@/locale/useLanguage";
 import { tagColor } from "@/utils/statusTagColor";
 
 import { useMoney, useDate } from "@/settings";
-import OrderDataTableModule from "@/modules/OrderModule/OrderDataTableModule";
+import GeneralMultipleTabDataTableModule from
+ "@/modules/GeneralMultipleTabModule/GeneralMultipleTabDataTableModule";
 
-export default function Order() {
+export default function GeneralMultipleTabPage({entity}) {
   const translate = useLanguage();
-  const { dateFormat } = useDate();
-  const entity = "order";
+  const { dateFormat } = useDate();  
   const { moneyFormatter } = useMoney();
 
   const searchConfig = {
-    entity: "client",
+    entity: "userinfo",
     displayLabels: ["name"],
     searchFields: "name",
   };
@@ -124,6 +124,6 @@ export default function Order() {
   };
 
   return (
-    <OrderDataTableModule config={config} dataTableDetails={dataTableDetails} />
+    <GeneralMultipleTabDataTableModule config={config} dataTableDetails={dataTableDetails} />
   );
 }

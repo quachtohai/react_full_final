@@ -9,6 +9,7 @@ import {
   EllipsisOutlined,
   ArrowRightOutlined,
   ArrowLeftOutlined,
+  FileExcelOutlined
 } from "@ant-design/icons";
 import { Dropdown, Table, Button } from "antd";
 import { PageHeader } from "@ant-design/pro-layout";
@@ -21,7 +22,6 @@ import { selectListItems } from "@/redux/erp/selectors";
 import { useErpContext } from "@/context/erp";
 import { generate as uniqueId } from "shortid";
 import { useNavigate } from "react-router-dom";
-import { useMoney, useDate } from "@/settings";
 import { DOWNLOAD_BASE_URL } from "@/config/serverApiConfig";
 import { selectLangDirection } from "@/redux/translate/selectors";
 import Actions from "@/components/Actions";
@@ -80,6 +80,9 @@ export default function DataTable({ config, extra = [], detail }) {
   };
 
   const handleDelete = (record) => {
+    alert(record.id);
+    console.log(record);
+
     dispatch(erp.currentAction({ actionType: "delete", data: record }));
     modal.open();
   };
@@ -119,7 +122,7 @@ export default function DataTable({ config, extra = [], detail }) {
                 default:
                   break;
               }
-              // else if (key === '2')handleCloseTask
+
             },
           }}
           trigger={["click"]}
@@ -137,16 +140,20 @@ export default function DataTable({ config, extra = [], detail }) {
 
   const handelDataTableLoad = (pagination) => {
     const options = {
-      page: pagination.current || 1,
-      items: pagination.pageSize || 10,
+      pageIndex: pagination.current || 1,
+      pageSize: pagination.pageSize || 10,
     };
     const optionsDate = {
       fromDate: fromDate,
       toDate: toDate,
     };
 
-    dispatch(erp.list({ entity, options,optionsDate }));
+    dispatch(erp.list({ entity, options, optionsDate }));
   };
+  const exportExcel = () => {
+    //console.log(items);
+    console.log(listResult);
+  }
 
   const dispatcher = () => {
     dispatch(erp.list({ entity }));
@@ -211,8 +218,8 @@ export default function DataTable({ config, extra = [], detail }) {
           <AutoCompleteAsync
             key={`${uniqueId()}`}
             entity={searchConfig?.entity}
-            displayLabels={["name"]}
-            searchFields={"name"}
+            displayLabels={searchConfig?.displayLabels}
+            searchFields={searchConfig?.searchFields}
             onChange={filterTable}
           />,
           <Button
@@ -221,8 +228,14 @@ export default function DataTable({ config, extra = [], detail }) {
             icon={<RedoOutlined />}
           >
             {translate("Refresh")}
+          </Button>,          
+          <Button
+            onClick={exportExcel}
+            type="primary" 
+            icon={<FileExcelOutlined />}
+          >
+            Export Excel
           </Button>,
-
           !disableAdd && <AddNewItem config={config} key={`${uniqueId()}`} />,
         ]}
         style={{

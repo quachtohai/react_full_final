@@ -1,10 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import dayjs from "dayjs";
 import useLanguage from "@/locale/useLanguage";
 import { tagColor } from "@/utils/statusTagColor";
 import { useMoney, useDate } from "@/settings";
-import { Tag } from "antd";
 import { configuration } from "@/redux/configurations/actions";
 import { useSelector, useDispatch } from "react-redux";
 import AutoCompleteAsync from "@/components/AutoCompleteAsync";
@@ -20,9 +18,10 @@ import {
   Col,
 } from "antd";
 import store from "@/redux/store";
-function FormData({entityDetail}) {
+function FormData({ entityDetail, readOnly }) {
+
   const dispatch = useDispatch();
-  const entity = "forms"; 
+  const entity = "forms";
   const [formDatas, setFormDatas] = useState([]);
   const translate = useLanguage();
   const dispatcher = () => {
@@ -58,7 +57,7 @@ function FormData({entityDetail}) {
       setFormDatas(finalResults);
     });
   };
-  
+
   const { dateFormat } = useDate();
   useEffect(() => {
     const controller = new AbortController();
@@ -78,8 +77,7 @@ function FormData({entityDetail}) {
             if (formData.description == "select") {
               formData.description2.split(";").map((item) => {
                 options.push({
-                  //value: item.split(",")[0],
-                  value:'drap',
+                  value: item.split(",")[0],
                   label: item.split(",")[1],
                 });
               });
@@ -106,26 +104,30 @@ function FormData({entityDetail}) {
                   name={formData.fieldName}
                   label={formData.label}
                   rules={rules}
+                  disabled={readOnly ? true : false}
                 >
                   {formData.entitySearch ? (
                     <AutoCompleteAsync
                       entity={formData.entitySearch}
                       displayLabels={formData.displayLabels.split(",")}
                       searchFields={formData.searchFields}
-                      redirectLabel={formData.redireactLabel}
+                      redirectLabel={formData.redirectLabel}
                       withRedirect
-                      urlToRedirect={formData.urlToRedirect}
+                      urlToRedirect={formData.urlRedirect}
                     />
                   ) : (
                     undefined
                   )}
                   {formData.description == "number" ? (
-                    <InputNumber style={{ width: "100%" }} min = {1} />
+                    <InputNumber style={{ width: "100%" }} min={1} disabled={readOnly ? true : false}
+                    />
                   ) : (
                     undefined
                   )}
                   {formData.description == "date" ? (
-                    <DatePicker style={{ width: "100%" }} format={dateFormat} />
+
+                    <DatePicker style={{ width: "100%" }} format={dateFormat} disabled={readOnly ? true : false}/>
+
                   ) : (
                     undefined
                   )}
@@ -134,13 +136,24 @@ function FormData({entityDetail}) {
                       { value: 'draft', label: translate('Draft') },
                       { value: 'pending', label: translate('Pending') },
                       { value: 'sent', label: translate('Sent') },
-                    ]}></Select>
+                    ]} disabled={readOnly ? true : false}
+                      style={readOnly ? { width: '100%', background: "rgba(153, 154, 159, 0.5)" } : undefined} >
+
+                    </Select>
                   ) : (
                     undefined
                   )}
-                  {formData.description == "string" &&
-                  !formData.entitySearch ? (
-                    <Input  />
+                  {formData.description == "string" && formData.fieldName.toLowerCase() != "password" &&
+                    !formData.entitySearch ? (
+                    <Input disabled={readOnly ? true : false}
+                      style={readOnly ? { width: '100%', background: "rgba(153, 154, 159, 0.5)" } : undefined} />
+                  ) : (
+                    undefined
+                  )}
+                  {formData.description == "string" && formData.fieldName.toLowerCase() == "password" &&
+                    !formData.entitySearch ? (
+                    <InputPassword disabled={readOnly ? true : false}
+                      style={readOnly ? { width: '100%', background: "rgba(153, 154, 159, 0.5)" } : undefined} />
                   ) : (
                     undefined
                   )}

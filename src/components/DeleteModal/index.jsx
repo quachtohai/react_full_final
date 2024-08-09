@@ -43,12 +43,13 @@ export default function DeleteModal({ config }) {
   }, [isSuccess, current]);
 
   const handleOk = () => {
-    const id = current._id;
+    const id = current.id;
     dispatch(crud.delete({ entity, id }));
     readBox.close();
     modal.close();
     panel.close();
     navMenu.collapse();
+    dispatch(crud.list({entity}));
   };
   const handleCancel = () => {
     if (!isLoading) modal.close();

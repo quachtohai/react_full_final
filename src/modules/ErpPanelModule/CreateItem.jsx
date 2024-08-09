@@ -13,6 +13,7 @@ import { selectCreatedItem } from "@/redux/erp/selectors";
 
 import calculate from "@/utils/calculate";
 import { generate as uniqueId } from "shortid";
+import dayjs from "dayjs";
 
 import Loading from "@/components/Loading";
 import {
@@ -38,7 +39,8 @@ function SaveForm({ form }) {
   );
 }
 
-export default function CreateItem({ config, CreateForm }) {
+export default function CreateItem({ config, CreateForm, dataSummary }) {
+ 
   const translate = useLanguage();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,12 +52,29 @@ export default function CreateItem({ config, CreateForm }) {
 
   const { isLoading, isSuccess, result } = useSelector(selectCreatedItem);
   const [form] = Form.useForm();
+
   const [subTotal, setSubTotal] = useState(0);
   const [offerSubTotal, setOfferSubTotal] = useState(0);
-  const handelValuesChange = (changedValues, values) => {
+  if (dataSummary && dataSummary.length > 0) {
+    dataSummary.map(datafirst => {
+      Object.keys(datafirst).map((key) => {
+        let value = datafirst[key]
+        form.setFieldsValue({
+          [key]: value
+        })
+      })
+
+    })
+  }
+  const handleChangeValues = (changedValues, values) => {
+    console.log(changedValues, values);
+    form.setFieldsValue({
+      fullName: (values.firstName + " " || "") + (values.lastName || "")
+    })
     const items = values["items"];
     let subTotal = 0;
     let subOfferTotal = 0;
+
 
     if (items) {
       items.map((item) => {
@@ -93,15 +112,22 @@ export default function CreateItem({ config, CreateForm }) {
       setOfferSubTotal(0);
       navigate(`/${entity.toLowerCase()}/read/${result._id}`);
     }
-    return () => {};
+    return () => { };
   }, [isSuccess]);
 
   const onSubmit = (fieldsValue) => {
+    let dataToUpdate = { ...fieldsValue };
+    const options = { timeZone: 'Asia/Ho_Chi_Minh' };
+
+    if (fieldsValue.birthDate) {
+      dataToUpdate.birthDate = dayjs(fieldsValue.birthDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+
+    }
     console.log("🚀 ~ onSubmit ~ fieldsValue:", fieldsValue);
 
     console.log(itemsData);
     let finalData = {};
-    finalData[entity] = fieldsValue;
+    finalData[entity] = dataToUpdate;
 
     let entityDetail = entity + "details";
     finalData[entity][entityDetail] = itemsData;
@@ -160,7 +186,7 @@ export default function CreateItem({ config, CreateForm }) {
           form={form}
           layout="vertical"
           onFinish={onSubmit}
-          onValuesChange={handelValuesChange}
+          onValuesChange={handleChangeValues}
         >
           <CreateForm
             subTotal={subTotal}
@@ -168,6 +194,8 @@ export default function CreateItem({ config, CreateForm }) {
             itemsData={itemsData}
             handleChangeData={handleChangeData}
             entityDetail={entity}
+            readOnly = {false}
+            dataSummary = {dataSummary}
           />
         </Form>
       </Loading>

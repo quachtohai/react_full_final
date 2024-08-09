@@ -17,18 +17,19 @@ function Module({ entityDetail }) {
   const [dataTableColumns, setDataTableColumns] = useState([]);
   const [searchConfig, setSearchConfig] = useState({});
   const [labels, setLabels] = useState({});
-  const deleteModalLabels = ["number", "client.name"];
+  const deleteModalLabels = ["fullName"];
 
   const dispatcher = () => {
     dispatch(configuration.list({ entity: entity })).then((data) => {
       let modules =
         store.getState().crudConfiguration.list.result.items.modules;
-
+      let moduleSearch = [...modules.data];
+      moduleSearch  = moduleSearch.filter(search=>search.entity.toLowerCase() == entityDetail)
       let dataTableColumn = {};
       let searchConfigTmp = {
-        entity: modules.data[0].entitySearch,
-        displayLabels: modules.data[0].displayLabels.split(","),
-        searchFields: modules.data[0].searchFields,
+        entity: moduleSearch[0].entitySearch,
+        displayLabels: moduleSearch[0].displayLabels.split(","),
+        searchFields: moduleSearch[0].searchFields,
       };
       
       let dataTableColumnTmps = [];
@@ -80,11 +81,11 @@ function Module({ entityDetail }) {
       setDataTableColumns(dataTableColumnTmps);
       setSearchConfig(searchConfigTmp);
       setLabels({
-        PANEL_TITLE: modules.data[0].entity,
-        DATATABLE_TITLE: modules.data[0].name,
-        ADD_NEW_ENTITY: modules.data[0].addNewEntity,
-        ENTITY_NAME: modules.data[0].entityName,
-        RECORD_ENTITY: modules.data[0].recordEntityname,
+        PANEL_TITLE: moduleSearch[0].entity,
+        DATATABLE_TITLE: moduleSearch[0].name,
+        ADD_NEW_ENTITY: moduleSearch[0].addNewEntity,
+        ENTITY_NAME: moduleSearch[0].entityName,
+        RECORD_ENTITY: moduleSearch[0].recordEntityname,
       });
     });
   };

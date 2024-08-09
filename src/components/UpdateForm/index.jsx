@@ -31,16 +31,27 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   const [form] = Form.useForm();
 
   const onSubmit = (fieldsValue) => {
-    const id = current._id;
+    const id = current.id;
+    debugger;
 
     if (fieldsValue.file && withUpload) {
       fieldsValue.file = fieldsValue.file[0].originFileObj;
     }
-    // const trimmedValues = Object.keys(fieldsValue).reduce((acc, key) => {
-    //   acc[key] = typeof fieldsValue[key] === 'string' ? fieldsValue[key].trim() : fieldsValue[key];
-    //   return acc;
-    // }, {});
-    dispatch(crud.update({ entity, id, jsonData: fieldsValue, withUpload }));
+    let dataToUpdate = { ...fieldsValue };
+    const options = { timeZone: 'Asia/Ho_Chi_Minh' };
+
+    if (fieldsValue.birthDate || fieldsValue.date) {
+      dataToUpdate.birthDate = dayjs(fieldsValue.birthDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+      dataToUpdate.date = dayjs(fieldsValue.date).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
+      
+    }
+    console.log(entity);
+
+    let finalData = {};
+    finalData[entity] = dataToUpdate;
+    finalData[entity].id = id; 
+   
+    dispatch(crud.update({ entity, id, jsonData: finalData, withUpload }));
   };
   useEffect(() => {
     if (current) {
@@ -82,6 +93,7 @@ export default function UpdateForm({ config, formElements, withUpload = false })
 
   useEffect(() => {
     if (isSuccess) {
+     
       readBox.open();
       collapsedBox.open();
       panel.open();

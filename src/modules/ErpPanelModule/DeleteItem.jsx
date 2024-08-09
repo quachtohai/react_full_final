@@ -8,6 +8,7 @@ import { selectDeletedItem } from '@/redux/erp/selectors';
 import { valueByString } from '@/utils/helpers';
 
 export default function Delete({ config }) {
+  console.log(config);
   let {
     entity,
     deleteModalLabels,
@@ -23,9 +24,11 @@ export default function Delete({ config }) {
 
   useEffect(() => {
     if (isSuccess) {
+     
       modal.close();
       const options = { page: 1, items: 10 };
       dispatch(erp.list({ entity, options }));
+      dispatch(erp.resetState());
     }
     if (current) {
       let labels = deleteModalLabels.map((x) => valueByString(current, x)).join(' ');
@@ -35,7 +38,7 @@ export default function Delete({ config }) {
   }, [isSuccess, current]);
 
   const handleOk = () => {
-    const id = current._id;
+    const id = current.id;
     dispatch(erp.delete({ entity, id }));
     modal.close();
   };

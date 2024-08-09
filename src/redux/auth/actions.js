@@ -9,7 +9,6 @@ export const login =
       type: actionTypes.REQUEST_LOADING,
     });
     const data = await authService.login({ loginData });
-    debugger;
     if (data.tokenString) {
       const auth_state = {
         current: data,
@@ -109,7 +108,7 @@ export const logout = () => async (dispatch) => {
  
   const data = await authService.logout();
   data.success = true;
-  if (data.success === false) {    
+  if (data.success === false) {   
     
     window.localStorage.setItem("settings", JSON.stringify(tmpSettings));
     window.localStorage.removeItem("isLogout");
