@@ -9,7 +9,7 @@ import useLanguage from '@/locale/useLanguage';
 
 import { Button, Form } from 'antd';
 import Loading from '@/components/Loading';
-
+import dayjs from 'dayjs';
 export default function CreateForm({ config, formElements, withUpload = false }) {
   let { entity } = config;
   const dispatch = useDispatch();
@@ -18,6 +18,24 @@ export default function CreateForm({ config, formElements, withUpload = false })
   const { panel, collapsedBox, readBox } = crudContextAction;
   const [form] = Form.useForm();
   const translate = useLanguage();
+  const handleChangeValues = (changedValues, values) => {
+    console.log(form.getFieldValue("productId"));
+    console.log(form.getFieldsInstance);
+    if (changedValues.totalQuantity || changedValues.ngQuantity1 || changedValues.ngQuantity2) {
+      form.setFieldsValue({
+        goodsQuantity: (values.totalQuantity || 0) - (values.ngQuantity1 || 0) - (values.ngQuantity2 || 0)
+
+      })
+
+
+    }
+    if (changedValues.goodsQuantity || changedValues.qcQuantity || changedValues.qcQuantity == 0) {
+      form.setFieldsValue({
+        incomeQuantity: (values.goodsQuantity || 0) - (values.qcQuantity || 0)
+
+      })
+    }
+  }
   const onSubmit = (fieldsValue) => {
     // Manually trim values before submission
 
@@ -30,18 +48,19 @@ export default function CreateForm({ config, formElements, withUpload = false })
     if (fieldsValue.birthDate || fieldsValue.date) {
       dataToUpdate.birthDate = dayjs(fieldsValue.birthDate).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
       dataToUpdate.date = dayjs(fieldsValue.date).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options);
-      
+
     }
 
+
     let finalData = {};
-    finalData[entity] = dataToUpdate;   
+    finalData[entity] = dataToUpdate;
 
     dispatch(crud.create({ entity, jsonData: finalData, withUpload }));
   };
 
   useEffect(() => {
     if (isSuccess) {
-      alert("success");
+
       readBox.open();
       collapsedBox.open();
       panel.open();
@@ -53,7 +72,9 @@ export default function CreateForm({ config, formElements, withUpload = false })
 
   return (
     <Loading isLoading={isLoading}>
-      <Form form={form} layout="vertical" onFinish={onSubmit}>
+      <Form form={form} layout="vertical"
+        onValuesChange={handleChangeValues}
+        onFinish={onSubmit}>
         {formElements}
         <Form.Item>
           <Button type="primary" htmlType="submit">

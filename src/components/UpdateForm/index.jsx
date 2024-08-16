@@ -55,37 +55,40 @@ export default function UpdateForm({ config, formElements, withUpload = false })
   };
   useEffect(() => {
     if (current) {
+      const options = { timeZone: 'Asia/Ho_Chi_Minh' };
       let newValues = { ...current };
       if (newValues.birthday) {
         newValues = {
           ...newValues,
-          birthday: dayjs(newValues['birthday']).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          birthday: dayjs(newValues['birthday']).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options),
         };
       }
       if (newValues.date) {
         newValues = {
           ...newValues,
-          date: dayjs(newValues['date']).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          date: dayjs(newValues['date'])
+          //.format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options),
         };
       }
       if (newValues.expiredDate) {
         newValues = {
           ...newValues,
-          expiredDate: dayjs(newValues['expiredDate']).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          expiredDate: dayjs(newValues['expiredDate']).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options),
         };
       }
       if (newValues.created) {
         newValues = {
           ...newValues,
-          created: dayjs(newValues['created']).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          created: dayjs(newValues['created']).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options),
         };
       }
       if (newValues.updated) {
         newValues = {
           ...newValues,
-          updated: dayjs(newValues['updated']).format('YYYY-MM-DDTHH:mm:ss.SSSZ'),
+          updated: dayjs(newValues['updated']).format('YYYY-MM-DDTHH:mm:ss.SSSZ').toLocaleString('en-US', options),
         };
       }
+      //newValues.date = undefined;
       form.resetFields();
       form.setFieldsValue(newValues);
     }

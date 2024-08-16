@@ -1,19 +1,19 @@
 import axios from 'axios';
 import { API_BASE_URL, CQRS_SERVER } from '@/config/serverApiConfig';
 
-
+import entityandRoute from '../config/entityandRoute';
 import errorHandler from './errorHandler';
 import successHandler from './successHandler';
 import { orderData } from '../data/orderData';
 axios.defaults.baseURL = API_BASE_URL;
-axios.defaults.withCredentials = true;
+axios.defaults.withCredentials = false;
 
 const request = {
 
   create: async ({ entity, jsonData }) => {
     try {
       console.log(jsonData);
-      axios.defaults.baseURL = CQRS_SERVER;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       const response = await axios.post(entity + '/create', jsonData);
       successHandler(response, {
@@ -27,8 +27,8 @@ const request = {
   },
   createAndUpload: async ({ entity, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.post(entity + '/create', jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -45,7 +45,7 @@ const request = {
   },
   read: async ({ entity, id }) => {
     try {
-      axios.defaults.baseURL = CQRS_SERVER;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       const response = await axios.get(entity + '/read/' + id);
 
@@ -67,7 +67,7 @@ const request = {
   },
   update: async ({ entity, id, jsonData }) => {
     try {
-      axios.defaults.baseURL = CQRS_SERVER;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       jsonData.Id = id;
       const response = await axios.put(entity + '/update/', jsonData);
@@ -82,8 +82,8 @@ const request = {
   },
   updateAndUpload: async ({ entity, id, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.patch(entity + '/update/' + id, jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -101,8 +101,8 @@ const request = {
 
   delete: async ({ entity, id }) => {
     try {
-      debugger;
-      axios.defaults.baseURL = CQRS_SERVER;
+     
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       const response = await axios.delete(entity + '/delete/' + id);
       successHandler(response, {
@@ -118,8 +118,8 @@ const request = {
 
   filter: async ({ entity, options = {} }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       let filter = options.filter ? 'filter=' + options.filter : '';
       let equal = options.equal ? '&equal=' + options.equal : '';
       let query = `?${filter}${equal}`;
@@ -137,7 +137,8 @@ const request = {
 
   search: async ({ entity, options = {} }) => {
     try {
-      axios.defaults.baseURL = CQRS_SERVER;
+      //CQRS_SERVER = "http://localhost:7000/"
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       let query = '?';
       for (var key in options) {
@@ -160,7 +161,8 @@ const request = {
 
   list: async ({ entity, options = {}, optionsDate = {} }) => {
     try {
-      axios.defaults.baseURL = CQRS_SERVER;
+      
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
       axios.defaults.withCredentials = false;
       let query = '?';
       for (var key in options) {
@@ -174,7 +176,6 @@ const request = {
       }
       let queryFinal = query + queryDate == "&" ? "" : query + queryDate;
       const response = await axios.get(entity + '/list' + queryFinal);
-
       successHandler(response, {
         notifyOnSuccess: false,
         notifyOnFailed: false,
@@ -198,8 +199,8 @@ const request = {
         query += key + '=' + options[key] + '&';
       }
       query = query.slice(0, -1);
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.get(entity + '/list' + query);
       const responseMock = orderData;
 
@@ -219,8 +220,8 @@ const request = {
         query += key + '=' + options[key] + '&';
       }
       query = query.slice(0, -1);
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
 
       const response = await axios.get(entity + '/listAll' + query);
 
@@ -236,8 +237,8 @@ const request = {
 
   post: async ({ entity, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.post(entity, jsonData);
 
       return response.data;
@@ -247,8 +248,8 @@ const request = {
   },
   get: async ({ entity }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.get(entity);
       return response.data;
     } catch (error) {
@@ -257,8 +258,8 @@ const request = {
   },
   patch: async ({ entity, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.patch(entity, jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
@@ -272,8 +273,8 @@ const request = {
 
   upload: async ({ entity, id, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.patch(entity + '/upload/' + id, jsonData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -290,8 +291,8 @@ const request = {
   },
 
   source: () => {
-    axios.defaults.baseURL = API_BASE_URL;
-    axios.defaults.withCredentials = true;
+    axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+    axios.defaults.withCredentials = false;
     const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     return source;
@@ -304,8 +305,8 @@ const request = {
         query += key + '=' + options[key] + '&';
       }
       query = query.slice(0, -1);
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.get(entity + '/summary' + query);
 
       successHandler(response, {
@@ -321,8 +322,8 @@ const request = {
 
   mail: async ({ entity, jsonData }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.post(entity + '/mail/', jsonData);
       successHandler(response, {
         notifyOnSuccess: true,
@@ -336,8 +337,8 @@ const request = {
 
   convert: async ({ entity, id }) => {
     try {
-      axios.defaults.baseURL = API_BASE_URL;
-      axios.defaults.withCredentials = true;
+      axios.defaults.baseURL = CQRS_SERVER + entityandRoute(entity);
+      axios.defaults.withCredentials = false;
       const response = await axios.get(`${entity}/convert/${id}`);
       successHandler(response, {
         notifyOnSuccess: true,

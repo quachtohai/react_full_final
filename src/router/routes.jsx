@@ -11,6 +11,7 @@ const GeneralPageUpdate = lazy(() => import("@/pages/GeneralPage/GeneralPageUpda
 const GeneralPageRead = lazy(() => import("@/pages/GeneralPage/GeneralPageRead"));
 const GeneralMasterPage = lazy(() => import("@/pages/GeneralMasterPage"));
 const GeneralMultipleTabPage = lazy(() => import('@/pages/GeneralMultipleTabPage'))
+const Reporting = lazy(()=>import('@/pages/ReportingPage'))
 
 let routes = {
   expense: [],
@@ -84,6 +85,24 @@ let routes = {
     {
       path: '/company',
       element: <GeneralMasterPage entity ="companyinfo" />
+    },
+    
+    {
+      path: '/product',
+      element: <GeneralMasterPage entity ="product" />
+    },
+    {
+      path: '/dictionaryinfo',
+      element: <GeneralMasterPage entity ="dictionaryinfo" />
+    },
+
+    {
+      path: '/dailyproduction',
+      element: <GeneralMasterPage entity ="dailyproduction" />
+    },
+    {
+      path: '/reporting',
+      element: <Reporting  />
     },
     {
       path: '*',

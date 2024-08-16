@@ -23,6 +23,7 @@ export default function ReadItem({ config }) {
 
   if (fields) readColumns = [...dataForRead({ fields: fields, translate: translate })];
   useEffect(() => {
+   
     const list = [];
     readColumns.map((props) => {
       const propsKey = props.dataIndex;
@@ -34,7 +35,7 @@ export default function ReadItem({ config }) {
     });
     setListState(list);
   }, [currentResult]);
-
+  console.log(listState);
   const show = isReadBoxOpen ? { display: 'block', opacity: 1 } : { display: 'none', opacity: 0 };
 
   const itemsList = listState.map((item) => {

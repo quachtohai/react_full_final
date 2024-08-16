@@ -26,7 +26,7 @@ import { DOWNLOAD_BASE_URL } from "@/config/serverApiConfig";
 import { selectLangDirection } from "@/redux/translate/selectors";
 import Actions from "@/components/Actions";
 import { DatePicker } from "antd";
-
+import ExcelExport from "@/components/ExcelExport";
 function AddNewItem({ config }) {
   const navigate = useNavigate();
   const { ADD_NEW_ENTITY, entity } = config;
@@ -80,7 +80,7 @@ export default function DataTable({ config, extra = [], detail }) {
   };
 
   const handleDelete = (record) => {
-    alert(record.id);
+    
     console.log(record);
 
     dispatch(erp.currentAction({ actionType: "delete", data: record }));
@@ -150,10 +150,7 @@ export default function DataTable({ config, extra = [], detail }) {
 
     dispatch(erp.list({ entity, options, optionsDate }));
   };
-  const exportExcel = () => {
-    //console.log(items);
-    console.log(listResult);
-  }
+
 
   const dispatcher = () => {
     dispatch(erp.list({ entity }));
@@ -228,14 +225,8 @@ export default function DataTable({ config, extra = [], detail }) {
             icon={<RedoOutlined />}
           >
             {translate("Refresh")}
-          </Button>,          
-          <Button
-            onClick={exportExcel}
-            type="primary" 
-            icon={<FileExcelOutlined />}
-          >
-            Export Excel
           </Button>,
+          <ExcelExport data={listResult.items} fileName={config.entity} />,
           !disableAdd && <AddNewItem config={config} key={`${uniqueId()}`} />,
         ]}
         style={{

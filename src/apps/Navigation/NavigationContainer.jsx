@@ -7,7 +7,7 @@ import { configuration } from "@/redux/configurations/actions";
 import { useSelector, useDispatch } from "react-redux";
 import useLanguage from "@/locale/useLanguage";
 import logoIcon from "@/style/images/logo.jpg";
-import logoText from "@/style/images/logo-text.jpg";
+import logoText from "@/style/images/logo-text.png";
 import store from '@/redux/store';
 import useResponsive from "@/hooks/useResponsive";
 
@@ -144,11 +144,11 @@ function Sidebar({ collapsible, isMobile = false }) {
           cursor: "pointer",
         }}
       >
-        <img
+        {/* <img
           src={logoIcon}
           alt="Logo"
           style={{ marginLeft: "-5px", height: "40px" }}
-        />
+        /> */}
 
         {!showLogoApp && (
           <img

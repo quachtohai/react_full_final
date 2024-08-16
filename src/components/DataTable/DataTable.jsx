@@ -20,9 +20,10 @@ import { dataForTable } from '@/utils/dataStructure';
 import { useMoney, useDate } from '@/settings';
 
 import { generate as uniqueId } from 'shortid';
-
+import ExcelExport from "@/components/ExcelExport";
 import { useCrudContext } from '@/context/crud';
 import { selectLangDirection } from '@/redux/translate/selectors';
+
 
 function AddNewItem({ config }) {
   const { crudContextAction } = useCrudContext();
@@ -196,6 +197,7 @@ export default function DataTable({ config, extra = [] }) {
           <Button onClick={handelDataTableLoad} key={`${uniqueId()}`} icon={<RedoOutlined />}>
             {translate('Refresh')}
           </Button>,
+          <ExcelExport data={listResult.items} fileName={config.entity} />,
 
           <AddNewItem key={`${uniqueId()}`} config={config} />,
         ]}

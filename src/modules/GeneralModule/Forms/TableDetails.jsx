@@ -17,12 +17,10 @@ import { configuration } from "@/redux/configurations/actions";
 import { useSelector, useDispatch } from "react-redux";
 import AutoCompleteAsync from "@/components/AutoCompleteAsync";
 import { DatePicker } from "antd";
-import FormItem from "antd/es/form/FormItem";
 import store from "@/redux/store";
 import calculate from "@/utils/calculate";
 import { request } from "@/request";
-import { UnderlineOutlined } from "@ant-design/icons";
-
+import ExcelExport from "@/components/ExcelExport";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -566,6 +564,7 @@ const TableDetails = ({
         >
           Add a row
         </Button>
+        <ExcelExport data={data} fileName={entityDetail} />
 
         <Button
           onClick={handleGetData}

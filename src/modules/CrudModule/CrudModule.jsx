@@ -32,6 +32,7 @@ function SidePanelTopContent({ config, formElements, withUpload }) {
   const [labels, setLabels] = useState('');
   useEffect(() => {
     if (currentItem) {
+      
       const currentlabels = deleteModalLabels.map((x) => currentItem[x]).join(' ');
 
       setLabels(currentlabels);

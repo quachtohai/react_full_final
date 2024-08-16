@@ -7,6 +7,7 @@ import { configuration } from "@/redux/configurations/actions";
 import { useSelector, useDispatch } from "react-redux";
 import store from "@/redux/store";
 import { useState, useEffect } from 'react';
+import { DatePicker } from 'antd';
 
 
 export default function GeneralMasterPage({ entity }) {
@@ -59,42 +60,76 @@ export default function GeneralMasterPage({ entity }) {
               displayLabels: [formDataObject.displayLabels],
               searchFields: formDataObject.searchFields,
               dataIndex: ['mainContact', 'firstname'],
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false
             }
           }
           if (formDataObject.description == "string") {
             fieldTmp = {
               type: "string",
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label,
             }
           }
           if (formDataObject.description == "phone") {
             fieldTmp = {
               type: "phone",
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
             }
           }
 
           if (formDataObject.description == "country") {
             fieldTmp = {
               type: "country",
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
             }
           }
 
           if (formDataObject.description == "email") {
             fieldTmp = {
               type: "email",
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
             }
           }
           if (formDataObject.description == "website") {
             fieldTmp = {
               type: "url",
-              require: formDataObject.rule[0].includes("require") ? true : false
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
             }
           }
-
+          if (formDataObject.description == "date") {
+            fieldTmp = {
+              type: "date",
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
+            }
+          }
+          if (formDataObject.description == "number") {
+            fieldTmp = {
+              type: "number",
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label
+            }
+          }
+          if (formDataObject.description == "select") {
+            let options = [];
+            formDataObject.description2.split(";").map((item) => {
+              options.push({
+                value: item.split(",")[0],
+                label: item.split(",")[1],
+              });
+            });
+            fieldTmp = {
+              type: "select",              
+              required: formDataObject.rule[0].includes("require") ? true : false,
+              label: formDataObject.label,
+              name: formDataObject.fieldName,
+              options:options
+            }
+          }          
 
           finalResults[formDataObject.fieldName] = fieldTmp;
           
